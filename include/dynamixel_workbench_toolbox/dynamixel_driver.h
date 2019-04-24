@@ -20,14 +20,8 @@
 #define DYNAMIXEL_DRIVER_H
 
 #include "dynamixel_tool.h"
-
-#if defined(__OPENCR__) || defined(__OPENCM904__)
-  #include <Arduino.h>
-  #include <DynamixelSDK.h>
-#elif defined(__linux__) || defined(__APPLE__)
-  #include "unistd.h"
-  #include "dynamixel_sdk/dynamixel_sdk.h"
-#endif
+#include "port_handler.h"
+#include "DynamixelSDK.h"
 
 #define MAX_DXL_SERIES_NUM  5
 #define MAX_HANDLER_NUM     5
@@ -84,16 +78,9 @@ class DynamixelDriver
   DynamixelDriver();
   ~DynamixelDriver();
 
-  bool init(const char* device_name = "/dev/ttyUSB0", 
-            uint32_t baud_rate = 57600, 
-            const char **log = NULL);
+  bool init(dynamixel::PortHandler* port_handler);
 
-  bool begin(const char* device_name = "/dev/ttyUSB0", 
-            uint32_t baud_rate = 57600, 
-            const char **log = NULL);
-
-  bool setPortHandler(const char *device_name, const char **log = NULL);
-  bool setBaudrate(uint32_t baud_rate, const char **log = NULL);
+  bool setPortHandler(dynamixel::PortHandler* port_handler);
   bool setPacketHandler(float protocol_version, const char **log = NULL);
 
   float getProtocolVersion(void);

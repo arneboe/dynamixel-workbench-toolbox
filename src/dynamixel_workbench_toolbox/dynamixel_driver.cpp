@@ -17,6 +17,7 @@
 /* Authors: Taehun Lim (Darby) */
 
 #include "../../include/dynamixel_workbench_toolbox/dynamixel_driver.h"
+#include "stm32f7xx_hal.h"
 
 DynamixelDriver::DynamixelDriver() : tools_cnt_(0), 
                                     sync_write_handler_cnt_(0), 
@@ -103,50 +104,28 @@ uint8_t DynamixelDriver::getTool(uint8_t id, const char **log)
   return 0xff;
 }
 
-bool DynamixelDriver::init(const char *device_name, uint32_t baud_rate, const char **log)
+bool DynamixelDriver::init(dynamixel::PortHandler* port_handler)
 {
   bool result = false;
 
-  result = setPortHandler(device_name, log);
+  result = setPortHandler(port_handler);
   if (result == false) return false;
 
-  result = setBaudrate(baud_rate, log);
-  if (result == false) return false;
-
-  result = setPacketHandler(2.0f, log);
+  result = setPacketHandler(2.0f, nullptr);
   if (result == false) return false;
 
   return result;
 }
 
-bool DynamixelDriver::begin(const char *device_name, uint32_t baud_rate, const char **log)
-{
-  return init(device_name, baud_rate, log);
-}
 
-bool DynamixelDriver::setPortHandler(const char *device_name, const char **log)
+bool DynamixelDriver::setPortHandler(dynamixel::PortHandler* port_handler)
 {
-  portHandler_ = dynamixel::PortHandler::getPortHandler(device_name);
+  portHandler_ = port_handler;
 
   if (portHandler_->openPort())
   {
-    if (log != NULL) *log = "[DynamixelDriver] Succeeded to open the port!";
     return true;
   }
-
-  if (log != NULL) *log = "[DynamixelDriver] Failed to open the port!";
-  return false;
-}
-
-bool DynamixelDriver::setBaudrate(uint32_t baud_rate, const char **log)
-{
-  if (portHandler_->setBaudRate((int)baud_rate))
-  {
-    if (log != NULL) *log = "[DynamixelDriver] Succeeded to change the baudrate!";
-    return true;
-  }
-
-  if (log != NULL) *log = "[DynamixelDriver] Failed to change the baudrate!";
   return false;
 }
 
@@ -420,11 +399,8 @@ bool DynamixelDriver::reboot(uint8_t id, const char **log)
   else
   {
     sdk_error.dxl_comm_result = packetHandler_->reboot(portHandler_, id, &sdk_error.dxl_error);
-#if defined(__OPENCR__) || defined(__OPENCM904__)
-    delay(1000);
-#else
-    usleep(1000*1000);
-#endif
+
+    HAL_Delay(1000);
 
     if (sdk_error.dxl_comm_result != COMM_SUCCESS)
     {
@@ -463,11 +439,9 @@ bool DynamixelDriver::reset(uint8_t id, const char **log)
   if (getProtocolVersion() == 1.0)
   {
     sdk_error.dxl_comm_result = packetHandler_->factoryReset(portHandler_, id, 0x00, &sdk_error.dxl_error);
-#if defined(__OPENCR__) || defined(__OPENCM904__)
-    delay(2000);
-#else
-    usleep(1000*2000);
-#endif
+
+    HAL_Delay(2000);
+
 
     if (sdk_error.dxl_comm_result != COMM_SUCCESS)
     {
@@ -521,11 +495,9 @@ bool DynamixelDriver::reset(uint8_t id, const char **log)
   else if (getProtocolVersion() == 2.0)
   {
     sdk_error.dxl_comm_result = packetHandler_->factoryReset(portHandler_, id, 0xff, &sdk_error.dxl_error);
-#if defined(__OPENCR__) || defined(__OPENCM904__)
-    delay(2000);
-#else
-    usleep(1000*2000);
-#endif
+
+    HAL_Delay(2000);
+
 
     if (sdk_error.dxl_comm_result != COMM_SUCCESS)
     {
@@ -569,11 +541,8 @@ bool DynamixelDriver::writeRegister(uint8_t id, uint16_t address, uint16_t lengt
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
 
-#if defined(__OPENCR__) || defined(__OPENCM904__)
-    delay(10);
-#else
-    usleep(1000*10);
-#endif
+
+    HAL_Delay(10);
 
   sdk_error.dxl_comm_result = packetHandler_->writeTxRx(portHandler_, 
                                                         id, 
@@ -616,11 +585,9 @@ bool DynamixelDriver::writeRegister(uint8_t id, const char *item_name, int32_t d
   uint16_t data_2_byte = (uint16_t)data;
   uint32_t data_4_byte = (uint32_t)data;
 
-#if defined(__OPENCR__) || defined(__OPENCM904__)
-    delay(10);
-#else
-    usleep(1000*10);
-#endif
+
+    HAL_Delay(10);
+
 
   switch (control_item->data_length)
   {
@@ -680,11 +647,8 @@ bool DynamixelDriver::writeOnlyRegister(uint8_t id, uint16_t address, uint16_t l
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
 
-#if defined(__OPENCR__) || defined(__OPENCM904__)
-    delay(10);
-#else
-    usleep(1000*10);
-#endif
+
+    HAL_Delay(10);
 
   sdk_error.dxl_comm_result = packetHandler_->writeTxOnly(portHandler_, 
                                                           id, 
@@ -717,11 +681,9 @@ bool DynamixelDriver::writeOnlyRegister(uint8_t id, const char *item_name, int32
   control_item = tools_[factor].getControlItem(item_name, log);
   if (control_item == NULL) return false;
 
-#if defined(__OPENCR__) || defined(__OPENCM904__)
-    delay(10);
-#else
-    usleep(1000*10);
-#endif
+
+    HAL_Delay(10);
+
 
   switch (control_item->data_length)
   {
