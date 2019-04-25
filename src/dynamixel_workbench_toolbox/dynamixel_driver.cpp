@@ -129,6 +129,18 @@ bool DynamixelDriver::setPortHandler(dynamixel::PortHandler* port_handler)
   return false;
 }
 
+bool DynamixelDriver::setBaudrate(uint32_t baud_rate, const char **log)
+{
+  if (portHandler_->setBaudRate((int)baud_rate))
+  {
+    if (log != NULL) *log = "[DynamixelDriver] Succeeded to change the baudrate!";
+    return true;
+  }
+
+  if (log != NULL) *log = "[DynamixelDriver] Failed to change the baudrate!";
+  return false;
+}
+
 bool DynamixelDriver::setPacketHandler(float protocol_version, const char **log)
 {
   packetHandler_ = dynamixel::PacketHandler::getPacketHandler(protocol_version);

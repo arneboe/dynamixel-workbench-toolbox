@@ -81,6 +81,7 @@ class DynamixelDriver
   bool init(dynamixel::PortHandler* port_handler);
 
   bool setPortHandler(dynamixel::PortHandler* port_handler);
+  bool setBaudrate(uint32_t baud_rate, const char **log = NULL);
   bool setPacketHandler(float protocol_version, const char **log = NULL);
 
   float getProtocolVersion(void);
