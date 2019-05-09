@@ -25,6 +25,7 @@ class DynamixelWorkbench : public DynamixelDriver
 {
  public:
   DynamixelWorkbench();
+  DynamixelWorkbench(dynamixel::PortHandler* port_handler);
   ~DynamixelWorkbench();
 
   bool torque(uint8_t id, int32_t onoff, const char **log = NULL);

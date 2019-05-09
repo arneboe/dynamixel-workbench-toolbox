@@ -76,6 +76,7 @@ class DynamixelDriver
 
  public:
   DynamixelDriver();
+  DynamixelDriver(dynamixel::PortHandler* port_handler);
   ~DynamixelDriver();
 
   bool init(dynamixel::PortHandler* port_handler);

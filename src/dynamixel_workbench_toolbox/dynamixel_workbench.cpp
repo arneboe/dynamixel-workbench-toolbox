@@ -36,6 +36,9 @@ static const ModelInfo* model_info = NULL;
 
 DynamixelWorkbench::DynamixelWorkbench(){}
 
+DynamixelWorkbench::DynamixelWorkbench(dynamixel::PortHandler* port_handler) : DynamixelDriver(port_handler)
+{}
+
 DynamixelWorkbench::~DynamixelWorkbench(){}
 
 bool DynamixelWorkbench::torque(uint8_t id, int32_t onoff, const char **log)

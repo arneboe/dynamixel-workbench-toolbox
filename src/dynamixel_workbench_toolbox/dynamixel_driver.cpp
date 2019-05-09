@@ -26,6 +26,10 @@ DynamixelDriver::DynamixelDriver() : tools_cnt_(0),
 {
 
 }
+DynamixelDriver::DynamixelDriver(dynamixel::PortHandler* port_handler) : DynamixelDriver()
+{
+    init(port_handler);
+}
 
 DynamixelDriver::~DynamixelDriver()
 { 
